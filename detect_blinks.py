@@ -1,5 +1,8 @@
 from scipy.spatial import distance
 import argparse
+from imutils import face_utils
+import numpy as np
+import dlib
 
 def calculateEar(eye):
     """Summary
@@ -32,5 +35,11 @@ parser.add_argument("-p","--shape-predictor",required=True,help="path to faical 
 parser.add_argument("-v","--video",required=True,type=str,default="",help="path to video being evaluated")
 args = vars(parser.parse_args())
 
+LCOUNTER = 0 #counter for the left eye
+RCOUNTER = 0 #counter for the right eye
+
+#loading dlib
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor(args["shape-predictor"]) #loding the pretrained dataset using the argument to its path
 
 print(calculateEar([1,2,3,4,5,6]))

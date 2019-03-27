@@ -1,4 +1,6 @@
 from scipy.spatial import distance
+import argparse
+
 def calculateEar(eye):
     """Summary
 
@@ -22,5 +24,13 @@ def calculateEar(eye):
     ear = ( A + B )/2.0*C;
 
     return ear
+
+
+#For parsing both of the arguments of the program, which are paths to the landmarking dataset and the video being evaluated
+parser = argparse.ArgumentParser(description="This takes the pre-trained landmarkind dataset and the input video stream")
+parser.add_argument("-p","--shape-predictor",required=True,help="path to faical landmark predictor")
+parser.add_argument("-v","--video",required=True,type=str,default="",help="path to video being evaluated")
+args = vars(parser.parse_args())
+
 
 print(calculateEar([1,2,3,4,5,6]))

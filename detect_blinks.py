@@ -1,8 +1,13 @@
-from scipy.spatial import distance
-import argparse
-from imutils import face_utils
-import numpy as np
+import cv2
+import time
 import dlib
+import argparse
+import imutils
+import numpy as np
+from imutils import face_utils
+from imutils.video import VideoStream
+from imutils.video import FileVideoStream
+from scipy.spatial import distance
 
 def calculateEar(eye):
     """Summary
@@ -42,4 +47,19 @@ RCOUNTER = 0 #counter for the right eye
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape-predictor"]) #loding the pretrained dataset using the argument to its path
 
-print(calculateEar([1,2,3,4,5,6]))
+#getting the indexes of the landmarks for the left and right eye
+(lStart, lEnds) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+(rStart, rEnds) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+
+print("[INFO] starting video stream thread...")
+vs = FileVideoStream(args["video"]).start()
+fileStream = True
+vs = VideoStream(src=0).start()
+fileStream = False
+time.sleep(1.0)
+
+while True:
+    frame = vs.read() #read from the video source
+    frame = imutils.resize(frame,width=450) #resize the window in which the stream is displayed
+    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) #Converting image to grayscale
+    rects = detector(gray,0) #Detecting faces in the image

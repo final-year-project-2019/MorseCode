@@ -64,14 +64,18 @@ while True:
     for rect in rects:
         shape = predictor(gray,rect)
         shape = face_utils.shape_to_np(shape)
-        
         leftEye = shape[lStart:lEnds]
         rightEye = shape[rStart:rEnds]
+        leftEyeHull = cv2.convexHull(leftEye)
+		rightEyeHull = cv2.convexHull(rightEye)
+		cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
+		cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
         leftEAR = calculateEar(leftEye)
         rightEAR = calculateEar(rightEye)
         print("Left EAR: ", leftEAR)
         print("rightEAR: ", rightEAR)
         time.sleep(1.0)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 vs.release()

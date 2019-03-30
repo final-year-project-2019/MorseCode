@@ -37,7 +37,7 @@ def calculateEar(eye):
 #For parsing both of the arguments of the program, which are paths to the landmarking dataset and the video being evaluated
 parser = argparse.ArgumentParser(description="This takes the pre-trained landmarkind dataset and the input video stream")
 parser.add_argument("-p","--shape-predictor",required=True,help="path to faical landmark predictor")
-parser.add_argument("-v","--video",required=True,type=str,default="",help="path to video being evaluated")
+parser.add_argument("-v","--video",type=str,default="",help="path to video being evaluated")
 args = vars(parser.parse_args())
 
 LCOUNTER = 0 #counter for the left eye
@@ -45,21 +45,34 @@ RCOUNTER = 0 #counter for the right eye
 
 #loading dlib
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(args["shape-predictor"]) #loding the pretrained dataset using the argument to its path
+predictor = dlib.shape_predictor(args["shape_predictor"]) #loaeding the pretrained dataset using the argument to its path
 
 #getting the indexes of the landmarks for the left and right eye
 (lStart, lEnds) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnds) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
 print("[INFO] starting video stream thread...")
-vs = FileVideoStream(args["video"]).start()
-fileStream = True
-vs = VideoStream(src=0).start()
-fileStream = False
-time.sleep(1.0)
+vs = cv2.VideoCapture(0)
 
 while True:
-    frame = vs.read() #read from the video source
-    frame = imutils.resize(frame,width=450) #resize the window in which the stream is displayed
-    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) #Converting image to grayscale
-    rects = detector(gray,0) #Detecting faces in the image
+    # read from the video source
+    ret,frame = vs.read() # resize the window in which the stream is displayed
+    frame = imutils.resize(frame, width=450)
+    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) # converting image to grayscale
+    cv2.imshow('frame',gray)
+    rects = detector(gray,0) # detecting faces in the image
+    for rect in rects:
+        shape = predictor(gray,rect)
+        shape = face_utils.shape_to_np(shape)
+        
+        leftEye = shape[lStart:lEnds]
+        rightEye = shape[rStart:rEnds]
+        leftEAR = calculateEar(leftEye)
+        rightEAR = calculateEar(rightEye)
+        print("Left EAR: ", leftEAR)
+        print("rightEAR: ", rightEAR)
+        time.sleep(1.0)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+vs.release()
+cv2.destroyAllWindows()

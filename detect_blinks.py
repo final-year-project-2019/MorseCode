@@ -29,7 +29,7 @@ def calculateEar(eye):
     C = distance.euclidean(eye[0],eye[3])
 
     #calculation of EAR
-    ear = ( A + B )/2.0*C;
+    ear = ( A + B )/(2.0*C);
 
     return ear
 
@@ -40,9 +40,9 @@ parser.add_argument("-p","--shape-predictor",required=True,help="path to faical 
 parser.add_argument("-v","--video",type=str,default="",help="path to video being evaluated")
 args = vars(parser.parse_args())
 
-LCOUNTER = 0 #counter for the left eye
-RCOUNTER = 0 #counter for the right eye
-
+FRAMECOUNTER = 0 #counter for the number of frames
+BLINKCOUNTER = 0
+blink = False
 #loading dlib
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape_predictor"]) #loaeding the pretrained dataset using the argument to its path
@@ -55,9 +55,9 @@ print("[INFO] starting video stream thread...")
 vs = cv2.VideoCapture(0)
 
 while True:
-    # read from the video source
-    ret,frame = vs.read() # resize the window in which the stream is displayed
-    frame = imutils.resize(frame, width=450)
+    FRAMECOUNTER+=1
+    ret,frame = vs.read() # read from the video source
+    frame = imutils.resize(frame, width=450)# resize the window in which the stream is displayed
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) # converting image to grayscale
     cv2.imshow('frame',gray)
     rects = detector(gray,0) # detecting faces in the image
@@ -66,17 +66,24 @@ while True:
         shape = face_utils.shape_to_np(shape)
         leftEye = shape[lStart:lEnds]
         rightEye = shape[rStart:rEnds]
-        leftEyeHull = cv2.convexHull(leftEye)
-		rightEyeHull = cv2.convexHull(rightEye)
-		cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
-		cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
         leftEAR = calculateEar(leftEye)
         rightEAR = calculateEar(rightEye)
-        print("Left EAR: ", leftEAR)
-        print("rightEAR: ", rightEAR)
-        time.sleep(1.0)
+        averageEAR = (leftEAR + rightEAR)/2.0
+        if(averageEAR < 0.16 ):
+            blink = True
+            BLINKCOUNTER+=1
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        else:
+            blink = False
+        if BLINKCOUNTER>0 and blink==False: # when eye is opened after a blink, this method is executed
+            if BLINKCOUNTER>10:
+                print("-")
+            elif BLINKCOUNTER<3:
+                pass
+            else: 
+                print(".")
+            BLINKCOUNTER =0
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 vs.release()
 cv2.destroyAllWindows()

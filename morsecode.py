@@ -15,15 +15,23 @@ MORSE_CODE_DICT = { 'A':'.-', 'B':'-...',
    '(':'-.--.', ')':'-.--.-'
 }
 
-def decrypt(message): 
+def decryptMessage(messageString):
+    words = messageString.split()
+    resultString=""
+    for i in words:
+        resultString += decrypt(i)
+    print(resultString)
+
+
+def decrypt(word): 
   
     # extra space added at the end to access the 
     # last morse code 
-    message += ' '
+    word += ' '
   
     decipher = '' 
     citext = '' 
-    for letter in message: 
+    for letter in word: 
   
         # checks for space 
         if (letter != ' '): 
@@ -52,4 +60,3 @@ def decrypt(message):
                 citext = '' 
   
     return decipher 
-  

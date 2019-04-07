@@ -2,6 +2,7 @@ import cv2
 import time
 import dlib
 import argparse
+from morsecode import *
 import imutils
 import numpy as np
 from imutils import face_utils
@@ -43,6 +44,7 @@ args = vars(parser.parse_args())
 FRAMECOUNTER = 0 #counter for the number of frames
 BLINKCOUNTER = 0
 blink = False
+word = ""
 #loading dlib
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape_predictor"]) #loaeding the pretrained dataset using the argument to its path
@@ -75,14 +77,22 @@ while True:
 
         else:
             blink = False
+        if FRAMECOUNTER > 40 and (not word == '') and (BLINKCOUNTER==0):
+            print(decrypt(word))
+            word=""
+            FRAMECOUNTER = 0
         if BLINKCOUNTER>0 and blink==False: # when eye is opened after a blink, this method is executed
             if BLINKCOUNTER>10:
+                word += "-"
                 print("-")
-            elif BLINKCOUNTER<3:
+                FRAMECOUNTER = 0
+            elif BLINKCOUNTER<4:
                 pass
             else: 
                 print(".")
-            BLINKCOUNTER =0
+                word += "."
+                FRAMECOUNTER = 0
+            BLINKCOUNTER = 0
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 vs.release()

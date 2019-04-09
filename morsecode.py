@@ -13,8 +13,12 @@ MORSE_CODE_DICT = {
 '--...': '7', '---..': '8', '----.': '9',
 '-----': '0', '--..--': ', ', '.-.-.-': '.',
 '..--..': '?', '-..-.': '/', '-....-': '-',
-'-.--.': '(', '-.--.-': ')'
+'-.--.': '(', '-.--.-': ')','.....':' '
 }
 
 def decrypt(character):
-    return MORSE_CODE_DICT[character]
+    try:
+        decrypt = MORSE_CODE_DICT[character]
+    except:
+        decrypt = ""
+    return decrypt

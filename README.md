@@ -14,4 +14,7 @@
  1. On program start, the video recording begins
  2. The user can now input morse code through blinks
  3. A  short blink count towards a dot and a long blink count towards a dash.
- 4. <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/International_Morse_Code.svg/1200px-International_Morse_Code.svg.png">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/International_Morse_Code.svg/1200px-International_Morse_Code.svg.png" width="500px">
+ 4. The appropriate morse code characters are entered via blink.
+ 5. On encountering a longer period without any input, the existing morse code characters are converted to their english character equivalents
+ 6. 5 dots counts towards a space and 6 dots counts towards a delete.

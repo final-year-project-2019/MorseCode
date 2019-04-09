@@ -45,6 +45,7 @@ FRAMECOUNTER = 0 #counter for the number of frames
 BLINKCOUNTER = 0
 blink = False
 word = ""
+CWORD = ""
 #loading dlib
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape_predictor"]) #loaeding the pretrained dataset using the argument to its path
@@ -78,11 +79,16 @@ while True:
         else:
             blink = False
         if FRAMECOUNTER > 40 and (not word == '') and (BLINKCOUNTER==0):
-            print(decrypt(word))
+            if word == "......":
+                word = ""
+                CWORD = CWORD[:-1]
+            else:
+                CWORD += decrypt(word)
+            print(CWORD)
             word=""
             FRAMECOUNTER = 0
         if BLINKCOUNTER>0 and blink==False: # when eye is opened after a blink, this method is executed
-            if BLINKCOUNTER>10:
+            if BLINKCOUNTER>14:
                 word += "-"
                 print("-")
                 FRAMECOUNTER = 0
